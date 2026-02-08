@@ -1,36 +1,36 @@
 import api from "./api"
 
-
-export const getUserPlayLists = ()=>{
-    api.get(`/playList/user/${userId}`,{
-        withCredentials : true
-    })
+// Get all playlists of logged-in user
+export const getUserPlayLists = () => {
+  return api.get("/playList/UserPlayLists")
 }
 
-export const createPlayList = () =>{
-    api.get("/playList")
+// Create playlist
+export const createPlayList = (data) => {
+  return api.post("/playList", data)
 }
 
-export const addVideoToPlaylist = ()=>{
-    api.patch(`/playList/add/${videoId}/${playListId} `,{
-        withCredentials : true})
+// Add video to playlist
+export const addVideoToPlaylist = (videoId, playListId) => {
+  return api.patch(`/playList/add/${videoId}/${playListId}`)
 }
 
-export const removeVideoFromPlayList = ()=>{
-    api.patch(`/playList/remove/${videoId}/${playListId}`,{
-        withCredentials : true
-    })
+// Remove video from playlist
+export const removeVideoFromPlayList = (videoId, playListId) => {
+  return api.patch(`/playList/remove/${videoId}/${playListId}`)
 }
 
-export const getPlayListById = ()=>{
-    api.get(`/playList/${playListId}`)
+// Get playlist by id
+export const getPlayListById = (playListId) => {
+  return api.get(`/playList/${playListId}`)
 }
 
-export const updatePlayList = ()=>{
-    api.post(`/playList/${playListId}`)
+// Update playlist
+export const updatePlayList = (playListId, data) => {
+  return api.put(`/playList/${playListId}`, data)
 }
 
-export const deletePlayList = ()=>{
-    api.delete(`/playList/${playListId}`)
+// Delete playlist
+export const deletePlayList = (playListId) => {
+  return api.delete(`/playList/${playListId}`)
 }
-

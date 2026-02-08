@@ -5,7 +5,7 @@ const links = [
   { name: "Home", path: "/" },
   { name: "Videos", path: "/videos" },
   { name: "Tweet", path: "/tweet" },
-  { name: "My Playlist", path: "/playlist" },
+  { name: "My Playlist", path: "/UserPlayLists" },
   { name: "subscribed channal",path : "/subscribed-channels"},
   { name: "Liked Videos", path: "/liked" },
   { name: "My Profile", path: "/profile" },
