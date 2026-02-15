@@ -6,6 +6,9 @@ export default function Header() {
   const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  // console.log(setUser);
+  
+
   // Logout handler
   const handleLogout = () => {
     setUser(null); // clears user in context and localStorage
@@ -13,7 +16,7 @@ export default function Header() {
   };
 
   return (
-    <header className="h-16 bg-white shadow flex items-center justify-end px-6 gap-4">
+    <header className="h-16 bg-white shadow flex items-center justify-end px-6 py-4 gap-4">
       {!user ? (
         <button
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"

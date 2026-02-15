@@ -27,7 +27,7 @@ export const getPlayListById = (playListId) => {
 
 // Update playlist
 export const updatePlayList = (playListId, data) => {
-  return api.put(`/playList/${playListId}`, data)
+  return api.post(`/playList/${playListId}`, data)
 }
 
 // Delete playlist

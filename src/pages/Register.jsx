@@ -19,10 +19,15 @@ export default function Register() {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+    console.log(files);
     if (files) {
       // handle file input
-     const avtar =  setFormData((prev) => ({ ...prev, [name]: files[0] }));
+      
+     const avtar =   setFormData((prev) => ({ ...prev, [name]: files[0] }));
       console.log(avtar);
+
+      console.log(formData);
+      
       
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -46,6 +51,17 @@ export default function Register() {
       // Assuming API returns user in res.data.data
       const newUser = res.data.data;
       setUser(newUser); // update context
+      console.log(setUser);
+      
+      setFormData({
+    fullname: "",
+    email: "",
+    password: "",
+    userName: "",
+    avtar: null,
+    coverImage: null,
+    })
+      
       navigate("/"); // go to home
     } catch (error) {
       console.error(error.response?.data || error.message);

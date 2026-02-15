@@ -6,12 +6,12 @@ export default function PlaylistVideos() {
   const {playlistId } = useParams("")
   // const videos = playlistVideos[playlistId] || []
   const [videos , setVideos ] = useState([])
-  console.log(playlistId);
+  // console.log(playlistId);
   
 
   useEffect(()=>{
 
-    console.log(playlistId);
+    // console.log(playlistId);
     
 
     if(!playlistId) return 
@@ -19,7 +19,7 @@ export default function PlaylistVideos() {
     const callres = async ()=>{
       try {
         const res = await getPlayListById(playlistId)
-        console.log(res.data.data.videos);
+        // console.log(res.data.data.videos);
         setVideos(res.data.data)  
       } catch (error) {
         console.error(error)
@@ -39,7 +39,7 @@ export default function PlaylistVideos() {
         Playlist Videos
       </h1>
 
-      {videos.length == 0 ? (
+      {Array.isArray(videos) && videos.length === 0 ? (
         <p className="text-gray-500">No videos in this playlist.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

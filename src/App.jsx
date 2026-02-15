@@ -12,7 +12,7 @@ import Profile from "./pages/Profile"
 import SubscribedChannels from "./pages/SubscribedChannels"
 import ChannelDetails from "./pages/ChannelDetails"
 import Login from "./pages/login"
-import Register from "./pages/register"
+import Register from "./pages/Register"
 import MySubscribers from "./pages/getSubscribers"
 import PlaylistVideos from "./pages/PlaylistVideos"
 
@@ -27,7 +27,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/videos" element={<Videos />} />
-              <Route path="/tweet" element={<Tweet />} />
+              <Route path="/tweets" element={<Tweet />} />
               <Route path="/UserPlayLists" element={<MyPlaylist />} />
               <Route path="/liked" element={<LikedVideos />} />
               <Route path="/profile" element={<Profile />} />
@@ -37,6 +37,8 @@ export default function App() {
               <Route path="/register" element={<Register/>}/>
               <Route path="/subscribers" element={<MySubscribers/>}/>
               <Route path="/playList/:playlistId" element={<PlaylistVideos/>}/>
+              <Route path="/tweets/:tweetId" element={<Tweet/>} />
+
 
             </Routes>
           </main>

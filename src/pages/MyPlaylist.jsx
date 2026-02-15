@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from "react"
-import { createPlayList, getUserPlayLists } from "../services/playList.js"
+import {
+  createPlayList,
+  deletePlayList,
+  getUserPlayLists,
+  updatePlayList,
+} from "../services/playList.js"
 import { useNavigate } from "react-router-dom"
 
 export default function MyPlaylist() {
   const [playlists, setPlaylists] = useState([])
   const [showForm, setShowForm] = useState(false)
-  const navigator = useNavigate()
+  const [isEditing, setIsEditing] = useState(false)
+  const [editPlaylistId, setEditPlaylistId] = useState(null)
 
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
+
+  const navigator = useNavigate()
 
   useEffect(() => {
     fetchPlaylists()
@@ -23,22 +31,33 @@ export default function MyPlaylist() {
     }
   }
 
-  // const handleButton = (e)=>{
-  //   // e.preventDefault()
-  //   console.log(e);
-    
-  //   navigator(`/playList/${e}`)
-  // }
-
-  const handleCreatePlaylist = async (e) => {
+  // CREATE + UPDATE handler
+  const handleSubmitPlaylist = async (e) => {
     e.preventDefault()
 
     try {
-      await createPlayList({ name, description })
+      if (isEditing) {
+        await updatePlayList(editPlaylistId, { name, description })
+      } else {
+        await createPlayList({ name, description })
+      }
+
       setShowForm(false)
+      setIsEditing(false)
+      setEditPlaylistId(null)
       setName("")
       setDescription("")
-      fetchPlaylists() // refresh list
+      fetchPlaylists()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  // DELETE
+  const handleDeletePlayList = async (id) => {
+    try {
+      await deletePlayList(id)
+      setPlaylists((prev) => prev.filter((pl) => pl._id !== id))
     } catch (error) {
       console.error(error)
     }
@@ -51,7 +70,12 @@ export default function MyPlaylist() {
         <h1 className="text-3xl font-bold">My Playlists</h1>
 
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            setShowForm(true)
+            setIsEditing(false)
+            setName("")
+            setDescription("")
+          }}
           className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
         >
           + Create Playlist
@@ -63,10 +87,10 @@ export default function MyPlaylist() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">
-              Create New Playlist
+              {isEditing ? "Edit Playlist" : "Create New Playlist"}
             </h2>
 
-            <form onSubmit={handleCreatePlaylist} className="space-y-4">
+            <form onSubmit={handleSubmitPlaylist} className="space-y-4">
               <input
                 type="text"
                 placeholder="Playlist name"
@@ -88,7 +112,11 @@ export default function MyPlaylist() {
               <div className="flex justify-end gap-3">
                 <button
                   type="button"
-                  onClick={() => setShowForm(false)}
+                  onClick={() => {
+                    setShowForm(false)
+                    setIsEditing(false)
+                    setEditPlaylistId(null)
+                  }}
                   className="px-4 py-2 border rounded"
                 >
                   Cancel
@@ -98,7 +126,7 @@ export default function MyPlaylist() {
                   type="submit"
                   className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
                 >
-                  Create
+                  {isEditing ? "Update" : "Create"}
                 </button>
               </div>
             </form>
@@ -108,20 +136,49 @@ export default function MyPlaylist() {
 
       {/* Playlist list */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-       {playlists.map((pl) => (
-  <div key={pl._id} className="bg-white shadow rounded-xl p-4">
-    <h3 className="font-semibold">{pl.name}</h3>
-    <p className="text-sm text-gray-600">{pl.description}</p>
+        {playlists.map((pl) => (
+          <div
+            key={pl._id}
+            className="bg-white shadow rounded-xl px-4 py-6"
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="font-semibold">{pl.name}</h3>
+                <p className="text-sm text-gray-600">{pl.description}</p>
+              </div>
 
-    <button
-      onClick={() => navigator(`/playList/${pl._id}`)}   // ✅ important
-      className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-    >
-      Open
-    </button>
-  </div>
-))}
+              {/* EDIT */}
+              <button
+                onClick={() => {
+                  setShowForm(true)
+                  setIsEditing(true)
+                  setEditPlaylistId(pl._id)
+                  setName(pl.name)
+                  setDescription(pl.description)
+                }}
+                className="flex items-center gap-2 px-3 py-1 text-sm rounded hover:bg-gray-100"
+              >
+                ✏️ Edit
+              </button>
+            </div>
 
+            <div className="flex items-end justify-between mt-4">
+              <button
+                onClick={() => navigator(`/playList/${pl._id}`)}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Open
+              </button>
+
+              <button
+                onClick={() => handleDeletePlayList(pl._id)}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )

@@ -9,7 +9,9 @@ export const registerUser = (data)=>{
 }
 
 
-export const profileUser = (data)=>{
-  return api.get("users/current-user",data)
-};
+export const profileUser = ()=>{
+  return api.get("/users/current-user")
+}; 
+
+
 

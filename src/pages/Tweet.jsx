@@ -1,76 +1,87 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
+import { addTweet, allTweets, deleteTweet, updateTweet } from "../services/tweet"
+import { profileUser } from "../services/auth"
 
 export default function Tweet() {
-  const currentUser = {
-    id: 1,
-    name: "John Doe",
-    username: "@johndoe",
-    avatar: "https://i.pravatar.cc/150?img=3",
-  }
-
-  const [tweets, setTweets] = useState([
-    {
-      id: 1,
-      user: {
-        name: "Alice Smith",
-        username: "@alice",
-        avatar: "https://i.pravatar.cc/150?img=5",
-      },
-      content: "Learning MERN stack step by step 🚀",
-      likes: 14,
-      createdAt: "2 hours ago",
-    },
-    {
-      id: 2,
-      user: {
-        name: "Bob Johnson",
-        username: "@bob",
-        avatar: "https://i.pravatar.cc/150?img=8",
-      },
-      content: "MongoDB aggregation finally makes sense!",
-      likes: 9,
-      createdAt: "1 day ago",
-    },
-  ])
 
   const [newTweet, setNewTweet] = useState("")
+  const [getUser, setGetUser] = useState({})
+  const [tweets, setTweets] = useState([])
 
-  const handleTweet = () => {
+  const [editingId, setEditingId] = useState(null)
+  const [editContent, setEditContent] = useState("")
+
+  // ================= ADD =================
+  const handleTweet = async () => {
     if (!newTweet.trim()) return
 
-    setTweets([
-      {
-        id: Date.now(),
-        user: currentUser,
-        content: newTweet,
-        likes: 0,
-        createdAt: "Just now",
-      },
-      ...tweets,
-    ])
-
-    setNewTweet("")
+    try {
+      const res = await addTweet({ content: newTweet })
+      setTweets(prev => [res.data.data, ...prev])
+      setNewTweet("")
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  const handleLike = id => {
-    setTweets(
-      tweets.map(tweet =>
-        tweet.id === id
-          ? { ...tweet, likes: tweet.likes + 1 }
-          : tweet
+  // ================= DELETE =================
+  const handleDelete = async (id) => {
+    try {
+      await deleteTweet(id)
+      setTweets(prev => prev.filter(t => t._id !== id))
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  // ================= UPDATE =================
+  const handleUpdate = async (tweetId) => {
+    if (!editContent.trim()) return
+
+    console.log(tweetId);
+    console.log(editContent);
+    
+    
+    
+
+    try {
+      const res = await updateTweet(tweetId, { content: editContent })
+
+      setTweets(prev =>
+        prev.map(tweet =>
+          tweet._id === tweetId ? res.data.data : tweet
+        )
       )
-    )
+
+      setEditingId(null)
+      setEditContent("")
+    } catch (error) {
+      console.error(error)
+    }
   }
+
+  // ================= FETCH =================
+  useEffect(() => {
+    const fetchData = async () => {
+      const userRes = await profileUser()
+      setGetUser(userRes.data.data.user)
+
+      const tweetRes = await allTweets()
+      setTweets(tweetRes.data.data)
+    }
+
+    fetchData()
+  }, [])
 
   return (
     <div className="max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Tweets</h1>
 
-      {/* Tweet Box */}
+      {/* CREATE */}
       <div className="bg-white rounded-xl shadow p-4 mb-6">
         <div className="flex gap-3">
           <img
-            src={currentUser.avatar}
+            src={getUser?.avtar}
             alt="User"
             className="w-10 h-10 rounded-full"
           />
@@ -79,7 +90,7 @@ export default function Tweet() {
             value={newTweet}
             onChange={e => setNewTweet(e.target.value)}
             placeholder="What's happening?"
-            className="w-full border rounded p-3 resize-none focus:outline-none focus:ring"
+            className="w-full border rounded p-3 resize-none"
             rows={3}
           />
         </div>
@@ -87,50 +98,80 @@ export default function Tweet() {
         <div className="flex justify-end mt-3">
           <button
             onClick={handleTweet}
-            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-6 py-2 bg-blue-600 text-white rounded"
           >
             Tweet
           </button>
         </div>
       </div>
 
-      {/* Tweet List */}
+      {/* LIST */}
       <div className="space-y-4">
         {tweets.map(tweet => (
-          <div
-            key={tweet.id}
-            className="bg-white rounded-xl shadow p-4"
-          >
+          <div key={tweet._id} className="bg-white rounded-xl shadow p-4">
+
             <div className="flex gap-3">
               <img
-                src={tweet.user.avatar}
-                alt={tweet.user.name}
+                src={getUser?.avtar}
+                alt="User"
                 className="w-10 h-10 rounded-full"
               />
 
               <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold">{tweet.user.name}</h3>
-                  <span className="text-sm text-gray-500">
-                    {tweet.user.username}
-                  </span>
+
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="font-semibold text-gray-600`">{getUser?.userName}</h3>
                   <span className="text-sm text-gray-400">
-                    · {tweet.createdAt}
+                     {new Date(tweet.createdAt).toLocaleDateString()}
                   </span>
                 </div>
 
-                <p className="mt-1 text-gray-800">
-                  {tweet.content}
-                </p>
+                {editingId === tweet._id ? (
+                  <>
+                    <textarea
+                      value={editContent}
+                      onChange={e => setEditContent(e.target.value)}
+                      className="w-full border rounded p-3 mt-2"
+                      rows={3}
+                    />
 
-                <button
-                  onClick={() => handleLike(tweet.id)}
-                  className="flex items-center gap-1 mt-2 text-sm text-red-500 hover:scale-110 transition"
-                >
-                  ❤️ {tweet.likes}
-                </button>
+                    <button
+                      onClick={() => handleUpdate(tweet._id)}
+                      className="mt-2 text-blue-600"
+                    >
+                      💾 Save
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-2">{tweet.content}</p>
+
+                    <div className="flex gap-6 mt-3 text-sm">
+
+                      <button
+                        onClick={() => {
+                          setEditingId(tweet._id)
+                          setEditContent(tweet.content)
+                        }}
+                        className="text-blue-600"
+                      >
+                        ✏️ Edit
+                      </button>
+
+                      <button
+                        onClick={() => handleDelete(tweet._id)}
+                        className="text-red-600"
+                      >
+                        🗑 Delete
+                      </button>
+
+                    </div>
+                  </>
+                )}
+
               </div>
             </div>
+
           </div>
         ))}
       </div>

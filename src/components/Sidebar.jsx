@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom"
 const links = [
   { name: "Home", path: "/" },
   { name: "Videos", path: "/videos" },
-  { name: "Tweet", path: "/tweet" },
+  { name: "Tweet", path: "/tweets" },
   { name: "My Playlist", path: "/UserPlayLists" },
   { name: "subscribed channal",path : "/subscribed-channels"},
   { name: "Liked Videos", path: "/liked" },
