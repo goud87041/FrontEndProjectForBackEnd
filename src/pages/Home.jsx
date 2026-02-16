@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react"
 import { getVideos } from "../services/homeVideos"
+import { LuLoader } from "react-icons/lu";
+
+
 
 export default function Home() {
   const [videos, setVideos] = useState([])
@@ -10,6 +13,9 @@ export default function Home() {
   }, [page])
 
   const fetchVideo = async () => {
+    // const re = getVideos(page)
+    // console.log(re);
+    
     try {
       const res = await getVideos(page)
       console.log(res.data.data);
@@ -24,20 +30,26 @@ export default function Home() {
   }
 
   const handleScroll = () => {
-    if(window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50){
+    // console.log(window.innerHeight )
+    console.log(window.scrollY);
+    // console.log(document.documentElement.scrollHeight-50);
+    if(window.innerHeight + window.scrollY >= document.documentElement.scrollHeight -5){
       setPage(prev => prev + 1)
     }
   }
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
+    console.log();
+    
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
+    <div >
     <div className="grid grid-cols-3 gap-7 bg-gray-200 p-4">
-      {videos.map(video => (
-        <div key={Date.now()} className="bg-white cursor-pointer rounded-lg overflow-hidden">
+      {videos.map((video,index) => (
+        <div key={video._id + index } className="bg-white cursor-pointer rounded-lg overflow-hidden">
           <div className="relative">
             <img
               src={video.thumbnail}
@@ -63,7 +75,14 @@ export default function Home() {
             </div>
           </div>
         </div>
+        
       ))}
+
     </div>
+    <div className="mt-6 ">
+      <LuLoader />
+
+    </div>
+      </div>
   )
 }
